@@ -1,0 +1,11 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+[project]
+name = "slurm-venturer"
+version = "1.0"
+readme = "README.md"
+[project.scripts]
+slurm-venturer = "slurm_venturer.cli:main"
+[tool.hatch.build.targets.wheel]
+packages = ["src/slurm_venturer"]
