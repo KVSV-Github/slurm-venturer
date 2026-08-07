@@ -1,5 +1,6 @@
 .venv
 results
+data
 .idea
 */__pycache__
 *.pyc

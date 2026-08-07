@@ -5,7 +5,12 @@ build-backend = "hatchling.build"
 name = "slurm-venturer"
 version = "1.0"
 readme = "README.md"
+dependencies = [
+    "pandas",
+    "matplotlib",
+    "typer",
+]
 [project.scripts]
-slurm-venturer = "slurm_venturer.cli:main"
+slurm-venturer = "slurm_venturer.cli:app"
 [tool.hatch.build.targets.wheel]
 packages = ["src/slurm_venturer"]
