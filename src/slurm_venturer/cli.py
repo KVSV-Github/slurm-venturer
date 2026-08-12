@@ -4,57 +4,79 @@ from pathlib import Path
 import typer
 from rich.console import Console
 
-from slurm_venturer.CSVProvider import CSVProvider
-from slurm_venturer.SacctProvider import SacctProvider
-from slurm_venturer.Results import Results
-from slurm_venturer.Plotter import Plotter
+from slurm_venturer.cli_text import app_help, banner, help_text
+
+from slurm_venturer.lib.providers.CSVProvider import CSVProvider
+from slurm_venturer.lib.providers.SacctProvider import SacctProvider
+from slurm_venturer.lib.Results import Results
+from slurm_venturer.lib.Plotter import Plotter
 
 app = typer.Typer(
-    help="Slurm efficiency metrics."
+    help=app_help,
+    no_args_is_help=True
 )
 console = Console()
 
-banner = r"""
-  ___ _                 __   __       _                    
- / __| |_  _ _ _ _ __   \ \ / /__ _ _| |_ _  _ _ _ ___ _ _ 
- \__ \ | || | '_| '  \   \ V / -_) ' \  _| || | '_/ -_) '_|
- |___/_|\_,_|_| |_|_|_|   \_/\___|_||_\__|\_,_|_| \___|_|                                             
-"""
+@app.callback()
+def main():
+    console.print(banner, style="bold blue")
+    console.print(app_help + "\n", style="dim")
 
 @app.command()
-def main(
+def download(
     user: str | None = typer.Option(
         None,
         "--user",
         "-u",
-        help="Filter results by given UID. If none is provided, data from all users is processed."
-        ),
-    save_data: bool = typer.Option(
-        False,
-        "--save-data",
-        help="Use sacct to retrieve data, and then save to a file."
+        help=help_text["user"]
+    ),
+    out_path: Path = typer.Option(
+        Path("./data"),
+        "--out",
+        "-o",
+        help=help_text["data"]
+    ),
+    start: str = typer.Option(
+        "today",
+        "--start",
+        "-s",
+    ),
+    end: str = typer.Option(
+        "now",
+        "--end",
+        "-e",
+    )
+):
+    provider = SacctProvider(start, end)
+    data = provider.get_data(user)
+
+    folder = out_path / datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    folder.mkdir(parents=True, exist_ok=True)
+
+    data.to_csv(folder / "data.csv")
+    console.print(f"Downloaded {len(data.index)} job(s)!", style="bright_green")
+
+@app.command()
+def analyse(
+    user: str | None = typer.Option(
+        None,
+        "--user",
+        "-u",
+        help=help_text["user"]
     ),
     data_path: Path = typer.Option(
-        Path("./data"),
-        "--data-path",
-        help="If you use the --save-data flag, then this will specify which file to save the data to. Otherwise, this is file from where the data is loaded."
+        Path("./data/"),
+        "--data",
+        help=help_text["data"]
     ),
     out_path: Path = typer.Option(
         Path("./results/"),
         "--out",
         "-o",
-        help="Specify the results folder."
+        help=help_text["out"]
     )
 ):
-    console.print(banner, style="bold blue")
-    console.print("Slurm efficiency metrics.", style="dim")
-
-    provider = None
-    if save_data:
-        provider = SacctProvider()
-    else:
-        provider = CSVProvider(data_path)
-    
+    provider = CSVProvider(data_path)
     data = provider.get_data(user)
     results = Results(data)
 
@@ -67,14 +89,59 @@ def main(
         results.cpu_util,
         title="Slurm CPU Utilisation",
         xlabel="CPU Utilisation")
+    
+    plotter.distribution(
+        results.time_util_hrplus,
+        title="Slurm Time Utilisation (1hr+ elapsed)",
+        xlabel="Time Utilisation")
+
+    plotter.distribution(
+        results.time_util_lesshr,
+        title="Slurm Time Utilisation (<1hr elapsed)",
+        xlabel="Time Utilisation")
 
     plotter.distribution(
         results.time_util,
         title="Slurm Time Utilisation",
         xlabel="Time Utilisation")
 
-    if save_data:
-        data.to_csv(data_path)
+    plotter.distribution(
+        results.time_alloc_hrs,
+        title="Slurm Time Allocated",
+        bins=25,
+        percentage=False,
+        xlabel="Hours")
+
+    plotter.distribution(
+        results.time_elapsed_hrs,
+        title="Slurm Time Elapsed",
+        percentage=False,
+        xlabel="Hours")
+
+    coeff, counts = results.scheduling_coeff
+    plotter.heatmap(
+        coeff, counts,
+        title="Scheduling Coefficient Matrix (numbers are #jobs)",
+        cbarlabel="Scheduling Coefficient",
+        ylabel="Runtime in hrs",
+        xlabel="#nodes")
+
+    coeff, counts = results.time_util_matrix
+    plotter.heatmap(
+        coeff, counts,
+        title="Utilisation Coefficient Matrix (numbers are #jobs)",
+        cbarlabel="Utilisation Coefficient",
+        ylabel="Runtime",
+        xlabel="#nodes")
+
+    # plotter.heatmap(
+    #     results.usage_matrix,
+    #     xlabel="#nodes",
+    #     title="Queue time by runtime and nodes",
+    #     cbarlabel="Average queue time"
+    # )
+
+    console.print(f"Results saved in {folder}.", style="bright_green")
 
 if __name__ == "__main__":
     app()

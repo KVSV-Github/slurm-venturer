@@ -1,5 +1,5 @@
 import pandas as pd
-from slurm_venturer.DataProvider import DataProvider
+from slurm_venturer.lib.providers.DataProvider import DataProvider
 
 class CSVProvider(DataProvider):
 
@@ -12,6 +12,7 @@ class CSVProvider(DataProvider):
                         index_col="JobID"
             )
 
-        data = data[data["UID"] == user]
+        if user != None:
+            data = data[data["UID"] == user]
 
         return data
