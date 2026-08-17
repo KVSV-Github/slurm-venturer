@@ -1,9 +1,8 @@
 import pandas as pd
 import io
 import subprocess
-import hashlib
 
-from slurm_venturer.lib.utils import slurm_seconds
+from slurm_venturer.lib.clean_data import clean_data
 from slurm_venturer.lib.providers.DataProvider import DataProvider
 
 class SacctProvider(DataProvider):
@@ -35,18 +34,7 @@ class SacctProvider(DataProvider):
         # data.dropna(inplace=True)
 
 
-        data = data[data["ElapsedRaw"] > 0]
-        data = data[data["Planned"].notna()]
-
-        data["TimelimitRaw"] *= 60 # is in minutes for whatever reason
-        data["TotalCPU"] = data["TotalCPU"].map(slurm_seconds)
-        data["Planned"] = data["Planned"].map(slurm_seconds)
-        
-        data["JobName"] = data["JobName"].apply(
-            lambda x:
-                hashlib.md5(x.encode()).hexdigest()
-        )
-        data["sbatch"] = data["TimelimitRaw"].notna()
+        data = clean_data(data)
         
         
 

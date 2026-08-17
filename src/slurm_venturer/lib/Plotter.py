@@ -3,6 +3,8 @@ from matplotlib.ticker import PercentFormatter
 import numpy as np
 import pandas as pd
 
+from slurm_venturer.lib.utils import create_folder
+
 class Plotter:
     def __init__(self, results, folder):
         self.results = results
@@ -26,7 +28,7 @@ class Plotter:
         ax.set_title(title)
 
         fig.tight_layout()
-        fig.savefig(self.folder / f"{title}.png")
+        fig.savefig(create_folder(self.folder / "histograms") / f"{title}.png")
         plt.close(fig)
 
     def heatmap(self, data, jobcount, *,
@@ -66,5 +68,15 @@ class Plotter:
         ax.set_title(title)
 
         fig.tight_layout()
-        fig.savefig(self.folder / f"{title}.png")
+        fig.savefig(create_folder(self.folder / "heatmaps") / f"{title}.png")
+        plt.close(fig)
+
+    def scatter(self, x, y, *, title, xlabel, ylabel):
+        fig, ax = plt.subplots()
+        ax.scatter(x, y, linewidth=0, s=2)
+        ax.set_ylabel(ylabel)
+        ax.set_xlabel(xlabel)
+        ax.set_title(title)
+        fig.tight_layout()
+        fig.savefig(create_folder(self.folder / "scatters") / f"{title}.png")
         plt.close(fig)

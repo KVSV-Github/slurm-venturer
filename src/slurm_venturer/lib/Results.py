@@ -7,6 +7,7 @@ class Results:
         self.sbatch_data = self.data[self.data["sbatch"]]
         self.timebins = [
             0,
+            0.25 * 3600,
             0.5 * 3600,
             3600,
             3 * 3600,
@@ -15,16 +16,18 @@ class Results:
             24 * 3600
         ]
         self.timelabels = [
-            "0-30mins",
-            "30mins-1h",
-            "1-3h",
-            "3-6h",
-            "6-12h",
-            "12-24h",
+            "0-15mins",
+            "15-30mins",
+            "30mins-1hr",
+            "1-3hrs",
+            "3-6hrs",
+            "6-12hrs",
+            "12-24hrs"
         ]
         self.nodebins = [
             1,
             2,
+            3,
             4,
             8,
             16,
@@ -33,7 +36,8 @@ class Results:
         ]
         self.nodelabels = [
             "1",
-            "2-3",
+            "2",
+            "3",
             "4-7",
             "8-15",
             "16-31",
@@ -61,8 +65,8 @@ class Results:
 
     @property
     def time_util_matrix(self):
-        data = self.sbatch_data
-        data["util"] = self.util_coeff
+        data = self.sbatch_data.copy()
+        data["util"] = (data["TimelimitRaw"] - data["ElapsedRaw"]) / 3600
         group = (
             data.assign(
                 runtime_bins=self.runtime_bins,
@@ -74,11 +78,6 @@ class Results:
         count = group.size().unstack(fill_value=0)
 
         return coeff, count
-
-
-    @property
-    def util_coeff(self):
-        return (1-self.time_util)*np.log(1+self.sbatch_data["ElapsedRaw"])
 
     @property
     def time_util_hrplus(self):
@@ -117,6 +116,14 @@ class Results:
     @property
     def time_alloc_hrs(self):
         return self.sbatch_data["TimelimitRaw"] / 3600
+
+    @property
+    def time_queueing_hrs(self):
+        return self.sbatch_data["Planned"] / 3600
+
+    @property
+    def time_wasted_hrs(self):
+        return (self.sbatch_data["TimelimitRaw"] - self.sbatch_data["ElapsedRaw"]) / 3600
 
     @property
     def cpu_util(self):
