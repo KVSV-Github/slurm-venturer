@@ -90,20 +90,20 @@ def analyse(
         title="Slurm CPU Utilisation",
         xlabel="CPU Utilisation")
     
-    plotter.distribution(
-        results.time_util_hrplus,
-        title="Slurm Time Utilisation (1hr+ elapsed)",
-        xlabel="Time Utilisation")
+    # plotter.distribution(
+    #     results.time_util_hrplus,
+    #     title="Slurm Time Utilisation (1hr+ elapsed)",
+    #     xlabel="Time Utilisation")
 
-    plotter.distribution(
-        results.time_util_lesshr,
-        title="Slurm Time Utilisation (<1hr elapsed)",
-        xlabel="Time Utilisation")
+    # plotter.distribution(
+    #     results.time_util_lesshr,
+    #     title="Slurm Time Utilisation (<1hr elapsed)",
+    #     xlabel="Time Utilisation")
 
-    plotter.distribution(
-        results.time_util,
-        title="Slurm Time Utilisation",
-        xlabel="Time Utilisation")
+    # plotter.distribution(
+    #     results.time_util,
+    #     title="Slurm Time Utilisation",
+    #     xlabel="Time Utilisation")
 
     plotter.distribution(
         results.time_alloc_hrs,

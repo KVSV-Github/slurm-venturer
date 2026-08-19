@@ -1,5 +1,7 @@
 import pandas as pd
+
 from slurm_venturer.lib.providers.DataProvider import DataProvider
+from slurm_venturer.lib.utils import hash
 
 class CSVProvider(DataProvider):
 
@@ -13,6 +15,6 @@ class CSVProvider(DataProvider):
             )
 
         if user != None:
-            data = data[data["UID"] == user]
+            data = data[data["UID"] == hash(user)]
 
         return data

@@ -1,6 +1,7 @@
 import pandas as pd
 from rich.progress import Progress, SpinnerColumn, TextColumn
 import pandas as pd
+import hashlib
 
 def slurm_seconds(s):
     # Convert D-HH:MM:SS -> D days HH:MM:SS
@@ -26,3 +27,6 @@ def run_with_spinner(msg, func, *args, **kwargs):
 def create_folder(folder):
     folder.mkdir(parents=True, exist_ok=True)
     return folder
+
+def hash(x):
+    return hashlib.md5(x.encode()).hexdigest()

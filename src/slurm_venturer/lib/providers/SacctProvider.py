@@ -30,9 +30,6 @@ class SacctProvider(DataProvider):
                         index_col="JobID"
             )
 
-        # print(f"Dropping {data.isna().sum().sum()} empty rows...")
-        # data.dropna(inplace=True)
-
 
         data = clean_data(data)
         

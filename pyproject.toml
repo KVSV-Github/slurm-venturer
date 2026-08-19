@@ -5,6 +5,8 @@ build-backend = "hatchling.build"
 name = "slurm-venturer"
 version = "1.0"
 readme = "README.md"
+license = "MIT"
+license-files = ["LICEN[CS]E*"]
 dependencies = [
     "pandas",
     "matplotlib",

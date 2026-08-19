@@ -79,15 +79,15 @@ class Results:
 
         return coeff, count
 
-    @property
-    def time_util_hrplus(self):
-        data = self.sbatch_data[self.sbatch_data["ElapsedRaw"] >= 3600]
-        return data["ElapsedRaw"] / data["TimelimitRaw"]
+    # @property
+    # def time_util_hrplus(self):
+    #     data = self.sbatch_data[self.sbatch_data["ElapsedRaw"] >= 3600]
+    #     return data["ElapsedRaw"] / data["TimelimitRaw"]
 
-    @property
-    def time_util_lesshr(self):
-        data = self.sbatch_data[self.sbatch_data["ElapsedRaw"] < 3600]
-        return data["ElapsedRaw"] / data["TimelimitRaw"]
+    # @property
+    # def time_util_lesshr(self):
+    #     data = self.sbatch_data[self.sbatch_data["ElapsedRaw"] < 3600]
+    #     return data["ElapsedRaw"] / data["TimelimitRaw"]
 
     @property
     def scheduling_coeff(self):
@@ -105,9 +105,9 @@ class Results:
 
         return coeff, count
     
-    @property
-    def time_util(self):
-        return self.sbatch_data["ElapsedRaw"] / self.sbatch_data["TimelimitRaw"]
+    # @property
+    # def time_util(self):
+    #     return self.sbatch_data["ElapsedRaw"] / self.sbatch_data["TimelimitRaw"]
 
     @property
     def time_elapsed_hrs(self):
