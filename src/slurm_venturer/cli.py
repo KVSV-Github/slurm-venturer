@@ -4,8 +4,8 @@ from pathlib import Path
 import typer
 from rich.console import Console
 
+from slurm_venturer.lib.utils import run_with_spinner
 from slurm_venturer.cli_text import app_help, banner, help_text
-
 from slurm_venturer.lib.providers.CSVProvider import CSVProvider
 from slurm_venturer.lib.providers.SacctProvider import SacctProvider
 from slurm_venturer.lib.Results import Results
@@ -17,12 +17,12 @@ app = typer.Typer(
 )
 console = Console()
 
-@app.callback()
+@app.callback(invoke_without_command=True)
 def main():
     console.print(banner, style="bold blue")
     console.print(app_help + "\n", style="dim")
 
-@app.command()
+@app.command(help=help_text["download"])
 def download(
     user: str | None = typer.Option(
         None,
@@ -31,24 +31,26 @@ def download(
         help=help_text["user"]
     ),
     out_path: Path = typer.Option(
-        Path("./data"),
+        ...,
         "--out",
         "-o",
-        help=help_text["data"]
+        help=help_text["out"]
     ),
     start: str = typer.Option(
         "today",
         "--start",
         "-s",
+        help=help_text["start"]
     ),
     end: str = typer.Option(
         "now",
         "--end",
         "-e",
+        help=help_text["end"]
     )
 ):
     provider = SacctProvider(start, end)
-    data = provider.get_data(user)
+    data = run_with_spinner("Getting accounting data...", provider.get_data, user)
 
     folder = out_path / datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     folder.mkdir(parents=True, exist_ok=True)
@@ -56,7 +58,7 @@ def download(
     data.to_csv(folder / "data.csv")
     console.print(f"Downloaded {len(data.index)} job(s)!", style="bright_green")
 
-@app.command()
+@app.command(help=help_text["analyse"])
 def analyse(
     user: str | None = typer.Option(
         None,
@@ -65,7 +67,7 @@ def analyse(
         help=help_text["user"]
     ),
     data_path: Path = typer.Option(
-        Path("./data/"),
+        ...,
         "--data",
         help=help_text["data"]
     ),
@@ -81,7 +83,6 @@ def analyse(
     results = Results(data)
 
     folder = out_path / datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    folder.mkdir(parents=True, exist_ok=True)
 
     plotter = Plotter(results, folder)
 
@@ -108,7 +109,7 @@ def analyse(
     plotter.distribution(
         results.time_alloc_hrs,
         title="Slurm Time Allocated",
-        bins=25,
+        bins=24,
         percentage=False,
         xlabel="Hours")
 
@@ -129,10 +130,16 @@ def analyse(
     coeff, counts = results.time_util_matrix
     plotter.heatmap(
         coeff, counts,
-        title="Utilisation Coefficient Matrix (numbers are #jobs)",
-        cbarlabel="Utilisation Coefficient",
+        title="Wall Clock Wastage Matrix (numbers are #jobs)",
+        cbarlabel="Hours wasted",
         ylabel="Runtime",
         xlabel="#nodes")
+
+    plotter.scatter(
+        results.time_alloc_hrs, results.time_wasted_hrs,
+        title="Time Wastage compared to Queueing",
+        ylabel="Wall Clock Allocation Wasted",
+        xlabel="Time Spent Queueing")
 
     # plotter.heatmap(
     #     results.usage_matrix,

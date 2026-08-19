@@ -10,5 +10,9 @@ app_help = "Slurm efficiency metrics."
 help_text = {
     "user" : "Filter results by given UID. If none is provided, data from all users is fetched.",
     "data" : "Where to load data from.",
-    "out" : "Where data will be saved."
+    "out" : "Where data will be saved.",
+    "start": "From when to load data.",
+    "end" : "From when up to load data.",
+    "analyse": "Create graphs and analytical results from data file.",
+    "download": "Download, parse, and save accounting data from slurm."
 }
