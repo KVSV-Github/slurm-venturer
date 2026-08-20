@@ -6,8 +6,7 @@ import pandas as pd
 from slurm_venturer.lib.utils import create_folder
 
 class Plotter:
-    def __init__(self, results, folder):
-        self.results = results
+    def __init__(self, folder):
         self.folder = folder
 
     def distribution(self, data, *,
@@ -38,7 +37,7 @@ class Plotter:
         cbarlabel
     ):
         fig, ax = plt.subplots()
-        im = ax.imshow(data, cmap="plasma", aspect="auto")
+        im = ax.imshow(data, cmap="coolwarm", aspect="auto")
 
         for i in range(len(data.index)):
             for j in range(len(data.columns)):

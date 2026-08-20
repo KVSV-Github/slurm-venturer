@@ -84,7 +84,7 @@ def analyse(
 
     folder = out_path / datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
-    plotter = Plotter(results, folder)
+    plotter = Plotter(folder)
 
     plotter.distribution(
         results.cpu_util,
