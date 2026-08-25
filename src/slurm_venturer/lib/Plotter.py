@@ -34,10 +34,13 @@ class Plotter:
         title,
         xlabel,
         ylabel,
-        cbarlabel
+        cbarlabel,
+        cmap,
+        vmin,
+        vmax
     ):
         fig, ax = plt.subplots()
-        im = ax.imshow(data, cmap="coolwarm", aspect="auto")
+        im = ax.imshow(data, cmap=cmap, aspect="auto", vmin=vmin, vmax=vmax)
 
         for i in range(len(data.index)):
             for j in range(len(data.columns)):

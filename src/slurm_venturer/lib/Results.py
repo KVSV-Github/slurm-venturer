@@ -74,7 +74,7 @@ class Results:
             )
             .groupby(["runtime_bins", "node_bin"], observed=False)["util"]
         )
-        coeff = group.mean().unstack()
+        coeff = group.median().unstack()
         count = group.size().unstack(fill_value=0)
 
         return coeff, count

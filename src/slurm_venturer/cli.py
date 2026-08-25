@@ -125,7 +125,10 @@ def analyse(
         title="Scheduling Coefficient Matrix (numbers are #jobs)",
         cbarlabel="Scheduling Coefficient",
         ylabel="Runtime in hrs",
-        xlabel="#nodes")
+        xlabel="#nodes",
+        cmap="coolwarm_r",
+        vmin=0,
+        vmax=1)
 
     coeff, counts = results.time_util_matrix
     plotter.heatmap(
@@ -133,13 +136,16 @@ def analyse(
         title="Wall Clock Wastage Matrix (numbers are #jobs)",
         cbarlabel="Hours wasted",
         ylabel="Runtime",
-        xlabel="#nodes")
+        xlabel="#nodes",
+        cmap="viridis",
+        vmin=0,
+        vmax=24)
 
-    plotter.scatter(
-        results.time_alloc_hrs, results.time_wasted_hrs,
-        title="Time Wastage compared to Queueing",
-        ylabel="Wall Clock Allocation Wasted",
-        xlabel="Time Spent Queueing")
+    # plotter.scatter(
+    #     results.time_alloc_hrs, results.time_wasted_hrs,
+    #     title="Time Wastage compared to Queueing",
+    #     ylabel="Wall Clock Allocation Wasted",
+    #     xlabel="Time Spent Queueing")
 
     # plotter.heatmap(
     #     results.usage_matrix,
