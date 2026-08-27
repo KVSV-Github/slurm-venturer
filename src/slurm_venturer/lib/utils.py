@@ -2,6 +2,7 @@ import pandas as pd
 from rich.progress import Progress, SpinnerColumn, TextColumn
 import pandas as pd
 import hashlib
+import re
 
 def slurm_seconds(s):
     # Convert D-HH:MM:SS -> D days HH:MM:SS
@@ -30,3 +31,21 @@ def create_folder(folder):
 
 def hash(x):
     return hashlib.md5(x.encode()).hexdigest()
+
+def slurm_memory_gb(value: str):
+    if not value:
+        return pd.NA
+
+    try:
+        unit = value[-1].upper()
+        number = float(value[:-1])
+
+        multipliers = {
+            "K": 1e-6,  # KB -> GB
+            "M": 1e-3,  # MB -> GB
+            "G": 1.0,
+        }
+
+        return number * multipliers[unit]
+    except (ValueError, KeyError):
+        return pd.NA

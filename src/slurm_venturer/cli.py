@@ -90,6 +90,11 @@ def analyse(
         results.cpu_util,
         title="Slurm CPU Utilisation",
         xlabel="CPU Utilisation")
+
+    plotter.distribution(
+            results.mem_util,
+            title="Slurm Memory Utilisation",
+            xlabel="Memory Utilisation")
     
     # plotter.distribution(
     #     results.time_util_hrplus,

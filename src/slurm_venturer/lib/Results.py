@@ -128,3 +128,7 @@ class Results:
     @property
     def cpu_util(self):
         return self.sbatch_data["TotalCPU"] / self.sbatch_data["CPUTimeRAW"]
+
+    @property
+    def mem_util(self):
+        return self.sbatch_data["MaxRSS"] / self.sbatch_data["REQMEM"]

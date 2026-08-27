@@ -18,7 +18,7 @@ class SacctProvider(DataProvider):
         "-E", self.end,
         "--reason=None",
         "--state=COMPLETED",
-        "--format=JobID,UID,JobName,ElapsedRaw,TimelimitRaw,TotalCPU,CPUTimeRAW,Planned,NNodes,NCPUS",
+        "--format=JobID,UID,JobName,ElapsedRaw,TimelimitRaw,TotalCPU,CPUTimeRAW,Planned,NNodes,NCPUS,MaxRSS,REQMEM",
         user_flag,
         "-P"
         ], stdout=subprocess.PIPE, text=True)
