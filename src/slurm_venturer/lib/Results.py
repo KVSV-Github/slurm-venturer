@@ -131,4 +131,4 @@ class Results:
 
     @property
     def mem_util(self):
-        return self.sbatch_data["MaxRSS"] / self.sbatch_data["REQMEM"]
+        return self.sbatch_data["MaxRSS"] / self.sbatch_data["ReqMem"]

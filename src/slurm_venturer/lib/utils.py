@@ -30,10 +30,13 @@ def create_folder(folder):
     return folder
 
 def hash(x):
-    return hashlib.md5(x.encode()).hexdigest()
+    return hashlib.md5(str(x).encode()).hexdigest()
 
 def slurm_memory_gb(value: str):
     if not value:
+        return pd.NA
+
+    if pd.isna(value):
         return pd.NA
 
     try:
